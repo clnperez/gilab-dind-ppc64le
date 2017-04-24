@@ -1,0 +1,21 @@
+# This is a combination of Docker's DIND Dockerfile with the gitlab addons (originally using jepatazo's)
+#FROM alpine:3.5
+FROM compose
+
+ENV DOCKER_VERSION 1.13.1
+
+RUN echo "deb http://ftp.unicamp.br/pub/ppc64el/ubuntu/16_04/docker-1.13.1-ppc64el xenial main" >> /etc/apt/sources.list.d/unicamp.list \
+	&& apt-get update && apt-get install -y --no-install-recommends \
+		ca-certificates \
+		curl \
+		openssl \
+	&& apt-get install -y --allow-unauthenticated  docker-engine \
+	&& docker -v \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://raw.githubusercontent.com/jpetazzo/dind/master/wrapdocker -o /usr/local/bin/wrapdocker \
+	&& chmod a+x /usr/local/bin/wrapdocker
+
+ENV LOG=file
+ENTRYPOINT ["wrapdocker"]
+CMD []
